@@ -168,3 +168,83 @@ Status: 401 Unauthorized
 - Both fields are required.
 - Passwords are compared securely.
 - The returned token is a JWT for authentication in subsequent requests.
+
+# User Profile Endpoint Documentation
+
+## Endpoint
+
+`GET /users/profile`
+
+## Description
+Retrieves the profile information of the currently authenticated user.
+
+## Authentication
+Requires a valid JWT token in one of the following:
+- Authorization header: `Bearer <token>`
+- Cookie: `token=<token>`
+
+## Responses
+
+### Success (200 OK)
+```
+Status: 200 OK
+{
+  "_id": "<user_id>",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+  // ...other user fields
+}
+```
+
+### Authentication Error (401 Unauthorized)
+```
+Status: 401 Unauthorized
+{
+  "message": "Authentication required"
+}
+```
+
+### Other Errors
+- `500 Internal Server Error`: For unexpected server errors.
+
+# User Logout Endpoint Documentation
+
+## Endpoint
+
+`GET /users/logout`
+
+## Description
+Logs out the currently authenticated user by clearing their authentication token cookie and blacklisting the current token.
+
+## Authentication
+Requires a valid JWT token in one of the following:
+- Authorization header: `Bearer <token>`
+- Cookie: `token=<token>`
+
+## Responses
+
+### Success (200 OK)
+```
+Status: 200 OK
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Authentication Error (401 Unauthorized)
+```
+Status: 401 Unauthorized
+{
+  "message": "Authentication required"
+}
+```
+
+### Other Errors
+- `500 Internal Server Error`: For unexpected server errors.
+
+## Notes
+- The token used for logout will be blacklisted to prevent reuse
+- The authentication cookie will be cleared from the client
