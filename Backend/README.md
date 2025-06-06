@@ -248,3 +248,119 @@ Status: 401 Unauthorized
 ## Notes
 - The token used for logout will be blacklisted to prevent reuse
 - The authentication cookie will be cleared from the client
+
+# Captain API Documentation
+
+## Register Captain Endpoint
+
+### Endpoint
+
+`POST /captains/register`
+
+### Description
+Registers a new captain (driver) in the system. This endpoint validates the input data including personal information and vehicle details.
+
+### Request Body
+The request body must be a JSON object with the following structure:
+
+```
+{
+  "fullname": {
+    "firstname": "string (min 3 chars, required)",
+    "lastname": "string (optional)"
+  },
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)",
+  "vehicle": {
+    "color": "string (min 3 chars, required)",
+    "plate": "string (min 3 chars, required)",
+    "capacity": "number (min 1, required)",
+    "vehicleType": "string (enum, required)"
+  }
+}
+```
+
+### Vehicle Types
+The following vehicle types are supported:
+- `car`
+- `bike`
+- `auto-rickshaw`
+- `truck`
+
+### Example Request
+```
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.driver@example.com",
+  "password": "secure123",
+  "vehicle": {
+    "color": "Blue",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+### Responses
+
+#### Success (201 Created)
+```
+{
+  "captain": {
+    "_id": "<captain_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.driver@example.com",
+    "vehicle": {
+      "color": "Blue",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+#### Validation Error (400 Bad Request)
+```
+{
+  "errors": [
+    {
+      "msg": "Invalid email",
+      "param": "email",
+      "location": "body"
+    },
+    {
+      "msg": "First name must be at least 3 characters",
+      "param": "fullname.firstname",
+      "location": "body"
+    }
+    // ... other validation errors
+  ]
+}
+```
+
+### Field Validations
+- `email`: Must be a valid email address
+- `fullname.firstname`: Minimum 3 characters
+- `password`: Minimum 6 characters
+- `vehicle.color`: Minimum 3 characters
+- `vehicle.plate`: Minimum 3 characters
+- `vehicle.capacity`: Must be an integer greater than or equal to 1
+- `vehicle.vehicleType`: Must be one of: 'car', 'bike', 'auto-rickshaw', 'truck'
+
+### Error Responses
+- `400 Bad Request`: Validation errors or missing required fields
+- `500 Internal Server Error`: For unexpected server errors
+
+### Notes
+- All fields marked as required must be provided
+- Vehicle type must be one of the predefined types
+- Email must be unique in the system
+- Password will be securely hashed before storage
