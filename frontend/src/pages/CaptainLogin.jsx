@@ -1,25 +1,38 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { CaptainDataContext } from '../context/CaptainContext';
+
 
 const CaptainLogin = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [captainData, setCaptainData] = useState({});
+
+    const { captain, setCaptain } = React.useContext(CaptainDataContext);
+    const navigate = useNavigate();
     
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
       e.preventDefault();
       // Here you would typically handle the login logic, such as sending the email and password to your backend.
       // console.log('Email:', email);
       // console.log('Password:', password);
       
-      setCaptainData({
+      const captain={
         email: email,
         password: password
-      });
-      console.log('User Data:', userData);
-  
+      }
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain);
+      if (response.status === 200) {
+        const data = response.data;
+        setCaptain(data.captain);
+        // localStorage.setItem('token', data.token); // Store captain data in localStorage
+        navigate('/captain-home');
+      }
+      // console.log('User Data:', userData);
+      
       // Reset form fields after submission
       setEmail('');
       setPassword('');
