@@ -176,16 +176,20 @@ Status: 401 Unauthorized
 `GET /users/profile`
 
 ## Description
+
 Retrieves the profile information of the currently authenticated user.
 
 ## Authentication
+
 Requires a valid JWT token in one of the following:
+
 - Authorization header: `Bearer <token>`
 - Cookie: `token=<token>`
 
 ## Responses
 
 ### Success (200 OK)
+
 ```
 Status: 200 OK
 {
@@ -200,6 +204,7 @@ Status: 200 OK
 ```
 
 ### Authentication Error (401 Unauthorized)
+
 ```
 Status: 401 Unauthorized
 {
@@ -208,6 +213,7 @@ Status: 401 Unauthorized
 ```
 
 ### Other Errors
+
 - `500 Internal Server Error`: For unexpected server errors.
 
 # User Logout Endpoint Documentation
@@ -217,16 +223,20 @@ Status: 401 Unauthorized
 `GET /users/logout`
 
 ## Description
+
 Logs out the currently authenticated user by clearing their authentication token cookie and blacklisting the current token.
 
 ## Authentication
+
 Requires a valid JWT token in one of the following:
+
 - Authorization header: `Bearer <token>`
 - Cookie: `token=<token>`
 
 ## Responses
 
 ### Success (200 OK)
+
 ```
 Status: 200 OK
 {
@@ -235,6 +245,7 @@ Status: 200 OK
 ```
 
 ### Authentication Error (401 Unauthorized)
+
 ```
 Status: 401 Unauthorized
 {
@@ -243,9 +254,11 @@ Status: 401 Unauthorized
 ```
 
 ### Other Errors
+
 - `500 Internal Server Error`: For unexpected server errors.
 
 ## Notes
+
 - The token used for logout will be blacklisted to prevent reuse
 - The authentication cookie will be cleared from the client
 
@@ -258,9 +271,11 @@ Status: 401 Unauthorized
 `POST /captains/register`
 
 ### Description
+
 Registers a new captain (driver) in the system. This endpoint validates the input data including personal information and vehicle details.
 
 ### Request Body
+
 The request body must be a JSON object with the following structure:
 
 ```
@@ -281,13 +296,16 @@ The request body must be a JSON object with the following structure:
 ```
 
 ### Vehicle Types
+
 The following vehicle types are supported:
+
 - `car`
 - `bike`
 - `auto-rickshaw`
 - `truck`
 
 ### Example Request
+
 ```
 {
   "fullname": {
@@ -308,6 +326,7 @@ The following vehicle types are supported:
 ### Responses
 
 #### Success (201 Created)
+
 ```
 {
   "captain": {
@@ -328,6 +347,7 @@ The following vehicle types are supported:
 ```
 
 #### Validation Error (400 Bad Request)
+
 ```
 {
   "errors": [
@@ -347,6 +367,7 @@ The following vehicle types are supported:
 ```
 
 ### Field Validations
+
 - `email`: Must be a valid email address
 - `fullname.firstname`: Minimum 3 characters
 - `password`: Minimum 6 characters
@@ -356,11 +377,264 @@ The following vehicle types are supported:
 - `vehicle.vehicleType`: Must be one of: 'car', 'bike', 'auto-rickshaw', 'truck'
 
 ### Error Responses
+
 - `400 Bad Request`: Validation errors or missing required fields
 - `500 Internal Server Error`: For unexpected server errors
 
 ### Notes
+
 - All fields marked as required must be provided
 - Vehicle type must be one of the predefined types
 - Email must be unique in the system
 - Password will be securely hashed before storage
+
+## Captain Login Endpoint
+
+### Endpoint
+
+`POST /captains/login`
+
+### Description
+
+Authenticates a captain with email and password. Returns a cookie with JWT token and captain data if credentials are valid.
+
+### Request Body
+
+```
+{
+  "email": "string (valid email, required)",
+  "password": "string (min 6 chars, required)"
+}
+```
+
+#### Example
+
+```
+{
+  "email": "john.driver@example.com",
+  "password": "secure123"
+}
+```
+
+### Responses
+
+#### Success (200 OK)
+
+```
+Status: 200 OK
+{
+  "message": "Login successful",
+  "captain": {
+    "_id": "<captain_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.driver@example.com",
+    "vehicle": {
+      "color": "Blue",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+#### Validation Error (400 Bad Request)
+
+```
+{
+  "errors": [
+    {
+      "msg": "Invalid email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### Authentication Error (401 Unauthorized)
+
+```
+{
+  "message": "Invalid email or password"
+}
+```
+
+### Notes
+
+- Authentication token is set as an HTTP-only cookie
+- Cookie expiration is set to 24 hours
+
+## Captain Profile Endpoint
+
+### Endpoint
+
+`GET /captains/profile`
+
+### Description
+
+Retrieves the profile information of the currently authenticated captain.
+
+### Authentication
+
+Requires a valid JWT token in one of the following:
+
+- Authorization header: `Bearer <token>`
+- Cookie: `token=<token>`
+
+### Responses
+
+#### Success (200 OK)
+
+```
+{
+  "_id": "<captain_id>",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.driver@example.com",
+  "vehicle": {
+    "color": "Blue",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+#### Authentication Error (401 Unauthorized)
+
+```
+{
+  "message": "Authentication required"
+}
+```
+
+#### Not Found Error (404 Not Found)
+
+```
+{
+  "message": "Captain not found"
+}
+```
+
+## Captain Logout Endpoint
+
+### Endpoint
+
+`GET /captains/logout`
+
+### Description
+
+Logs out the currently authenticated captain by clearing their authentication token cookie and blacklisting the current token.
+
+### Authentication
+
+Requires a valid JWT token in one of the following:
+
+- Authorization header: `Bearer <token>`
+- Cookie: `token=<token>`
+
+### Responses
+
+#### Success (200 OK)
+
+```
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### Authentication Error (401 Unauthorized)
+
+```
+{
+  "message": "Authentication required"
+}
+```
+
+### Notes
+
+- The token will be blacklisted to prevent reuse
+- The authentication cookie will be cleared from the client
+
+
+# 🚕 GET /rides/get-fare
+
+This endpoint calculates and returns the estimated fare for a ride between the provided pickup and destination locations.
+
+---
+
+## 🔐 Authentication
+
+- Required: ✅ Yes (JWT)
+- Pass the token in the `Authorization` header as:  
+  `Authorization: Bearer <your_token>`
+
+---
+
+## 📥 Query Parameters
+
+| Name         | Type   | Required | Description                               |
+|--------------|--------|----------|-------------------------------------------|
+| `pickup`     | string | ✅ Yes    | Pickup location address (min 1 character) |
+| `destination`| string | ✅ Yes    | Destination location address (min 1 character) |
+
+📌 Example:
+GET /rides/get-fare?pickup=Connaught%20Place&destination=India%20Gate
+
+yaml
+Copy
+Edit
+
+---
+
+## ✅ Success Response
+
+**Status:** `200 OK`
+
+```json
+{
+  "fare": 120,
+  "distance": 5.2,
+  "currency": "INR"
+}
+fare: Total estimated fare in INR.
+
+distance: Estimated distance in kilometers.
+
+currency: Always "INR" for now.
+
+⚠️ Validation Error
+Status: 400 Bad Request
+
+json
+Copy
+Edit
+{
+  "errors": [
+    {
+      "msg": "invalid Pickup location",
+      "param": "pickup",
+      "location": "query"
+    },
+    {
+      "msg": "invalid Destination location",
+      "param": "destination",
+      "location": "query"
+    }
+  ]
+}
+🛠️ Server Error
+Status: 500 Internal Server Error
+
+json
+Copy
+Edit
+{
+  "message": "Error message details"
+}
