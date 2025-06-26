@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Custom media queries */
+@media (max-width: 600px) {
+  .custom-responsive {
+    font-size: 14px;
+    padding: 8px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .custom-responsive {
+    font-size: 18px;
+    padding: 16px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .custom-responsive {
+    font-size: 22px;
+    padding: 24px;
+  }
+}

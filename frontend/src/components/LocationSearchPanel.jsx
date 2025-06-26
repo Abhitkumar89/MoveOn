@@ -1,51 +1,36 @@
 import React from 'react'
 
-const LocationSearchPanel = (props) => {
+const LocationSearchPanel = ({ suggestions, setVehiclePanel, setPanelOpen, setPickup, setDestination, activeField }) => {
 
-    const locations=[
-        "24A Near Gauranga cafe karampura new Delhi-110015",
-        "24B Near Kumar's cafe karampura new Delhi-110015",
-        "24C Near Gaur's cafe karampura new Delhi-110015",
-        "24D Near Sharma's cafe karampura new Delhi-110015",
-    ]
-
-  return (
-    <div>
-        {/* this is just a sample data */}
-        
-        {
-            locations.map(function(elem,idx){
-                return <div key={idx} onClick={()=>{
-                    props.setVehiclePanel(true);
-                    props.setPanelOpen(false);
-                }} className='flex gap-4  border-2 p-3 border-grey-50 active:border-black rounded-xl my-2 items-center justify-start'>
-                            <h2 className='bg-[#eee] h-7 w-7 flex items-center justify-center rounded-full'><i className="ri-map-pin-fill"></i></h2>
-                            <h4 className='font-medium'>{elem}</h4>
-                        </div>
-            })
+    const handleSuggestionClick = (suggestion) => {
+        if (activeField === 'pickup') {
+            setPickup(suggestion)
+        } else if (activeField === 'destination') {
+            setDestination(suggestion)
         }
-        
-        <div className='flex gap-4  border-2 p-3 border-grey-50 active:border-black rounded-xl my-2 items-center justify-start'>
-            <h2 className='bg-[#eee] h-7 w-7 flex items-center justify-center rounded-full'><i className="ri-map-pin-fill"></i></h2>
-            <h4 className='font-medium'>S.B.M Senior Secondary School, Sivaji Marg, New Delhi-110015</h4>
-        </div>
+        // setVehiclePanel(true)
+        // setPanelOpen(false)
+    }
 
-        <div className='flex gap-4 border-2 p-3 border-grey-50 active:border-black rounded-xl my-2 items-center justify-start'>
-            <h2 className='bg-[#eee] h-7 w-7 flex items-center justify-center rounded-full'><i className="ri-map-pin-fill"></i></h2>
-            <h4 className='font-medium'>S.B.M Senior Secondary School, Sivaji Marg, New Delhi-110015</h4>
-        </div>
+    return (
+            <div>
+                {
+                    suggestions.map((elem, idx) => (
+                    <div
+                        key={idx}
+                        onClick={() => handleSuggestionClick(elem)}
+                        className='flex gap-4 border-2 p-3 border-gray-50 active:border-black rounded-xl items-center my-2 mt-6 justify-start'
+                    >
+                    <div className='bg-[#eee] h-12 w-12 flex items-center justify-center rounded-full text-xl'>
+                    <i className="ri-map-pin-fill"></i>
+                    </div>
+                    <h4 className='font-medium'>{elem}</h4>
+                    </div>
+                    ))
+                }
+            </div>
 
-        <div className='flex gap-4 border-2 p-3 border-grey-50 active:border-black rounded-xl my-2 items-center justify-start'>
-            <h2 className='bg-[#eee] h-7 w-7 flex items-center justify-center rounded-full'><i className="ri-map-pin-fill"></i></h2>
-            <h4 className='font-medium'>S.B.M Senior Secondary School, Sivaji Marg, New Delhi-110015</h4>
-        </div>
-
-        <div className='flex gap-4 border-2 p-3 border-grey-50 active:border-black rounded-xl my-2 items-center justify-start'>
-            <h2 className='bg-[#eee] h-7 w-7 flex items-center justify-center rounded-full'><i className="ri-map-pin-fill"></i></h2>
-            <h4 className='font-medium'>S.B.M Senior Secondary School, Sivaji Marg, New Delhi-110015</h4>
-        </div>
-    </div>
-  )
+    )
 }
 
 export default LocationSearchPanel
