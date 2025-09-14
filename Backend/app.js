@@ -3,12 +3,12 @@ dotenv.config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const connectToDB = require('./db/db');
-const userRoutes = require('./routes/user.routes');
+const connectToDB = require('./db/db.js');
+const userRoutes = require('./routes/user.routes.js');
 const cookieParser = require('cookie-parser');
-const captainRoutes = require('./routes/captain.routes');
-const mapRoutes = require('./routes/maps.routes');
-const rideRoutes=require('./routes/ride.routes');
+const captainRoutes = require('./routes/captain.routes.js');
+const mapRoutes = require('./routes/maps.routes.js');
+const rideRoutes=require('./routes/ride.routes.js');
 
 // Connect to MongoDB
 connectToDB();
