@@ -3,21 +3,32 @@ const captainModel = require('../models/captain.model');
 
 module.exports.getAddressCoordinate = async (address) => {
     const apiKey = process.env.GOOGLE_MAPS_API;
+    
+    if (!apiKey) {
+        console.error('Google Maps API key is not set');
+        throw new Error('Google Maps API key is not configured');
+    }
+    
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    console.log('Fetching coordinates for address:', address);
 
     try {
         const response = await axios.get(url);
+        console.log('Geocoding response status:', response.data.status);
+        
         if (response.data.status === 'OK') {
             const location = response.data.results[ 0 ].geometry.location;
+            console.log('Coordinates found:', location);
             return {
                 ltd: location.lat,
                 lng: location.lng
             };
         } else {
-            throw new Error('Unable to fetch coordinates');
+            console.error('Geocoding failed:', response.data.status, response.data.error_message);
+            throw new Error(`Unable to fetch coordinates: ${response.data.status}`);
         }
     } catch (error) {
-        console.error(error);
+        console.error('Error in getAddressCoordinate:', error);
         throw error;
     }
 }
@@ -76,17 +87,24 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
 module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
 
     // radius in km
+    try {
+        const captains = await captainModel.find({
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [lng, ltd] // [longitude, latitude]
+                    },
+                    $maxDistance: radius * 1000 // Convert km to meters
+                }
+            },
+            socketId: { $exists: true, $ne: null } // Only captains with active socket connections
+        });
 
-
-    const captains = await captainModel.find({
-        location: {
-            $geoWithin: {
-                $centerSphere: [ [ ltd, lng ], radius / 6371 ]
-            }
-        }
-    });
-
-    return captains;
-
-
+        console.log(`Found ${captains.length} captains within ${radius}km radius`);
+        return captains;
+    } catch (error) {
+        console.error('Error finding captains in radius:', error);
+        return [];
+    }
 }

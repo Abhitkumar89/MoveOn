@@ -14,6 +14,7 @@ module.exports.createCaptain = async ({
         },
         email,
         password,
+        status: 'active', // Set captain as active when created
         vehicle: {
             color,
             plate,

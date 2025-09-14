@@ -19,10 +19,17 @@ function initializeSocket(server) {
         socket.on('join', async (data) => {
             const { userId, userType } = data;
 
-            if (userType === 'user') {
-                await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
-            } else if (userType === 'captain') {
-                await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
+            try {
+                if (userType === 'user') {
+                    await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+                    console.log(`User ${userId} joined with socket ${socket.id}`);
+                } else if (userType === 'captain') {
+                    await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
+                    console.log(`Captain ${userId} joined with socket ${socket.id}`);
+                }
+            } catch (error) {
+                console.error('Error in join event:', error);
+                socket.emit('error', { message: 'Failed to join' });
             }
         });
 
@@ -34,12 +41,18 @@ function initializeSocket(server) {
                 return socket.emit('error', { message: 'Invalid location data' });
             }
 
-            await captainModel.findByIdAndUpdate(userId, {
-                location: {
-                    ltd: location.ltd,
-                    lng: location.lng
-                }
-            });
+            try {
+                await captainModel.findByIdAndUpdate(userId, {
+                    location: {
+                        type: 'Point',
+                        coordinates: [location.lng, location.ltd] // [longitude, latitude]
+                    }
+                });
+                console.log(`Updated location for captain ${userId}`);
+            } catch (error) {
+                console.error('Error updating captain location:', error);
+                socket.emit('error', { message: 'Failed to update location' });
+            }
         });
 
         socket.on('disconnect', () => {
@@ -49,11 +62,12 @@ function initializeSocket(server) {
 }
 
 const sendMessageToSocketId = (socketId, messageObject) => {
-
-console.log(messageObject);
+    console.log('Sending message to socketId:', socketId);
+    console.log('Message object:', messageObject);
 
     if (io) {
         io.to(socketId).emit(messageObject.event, messageObject.data);
+        console.log(`Message sent to socket ${socketId}: ${messageObject.event}`);
     } else {
         console.log('Socket.io not initialized.');
     }

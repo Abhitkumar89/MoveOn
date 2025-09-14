@@ -79,3 +79,20 @@ module.exports.logoutCaptain = async (req, res, next) => {
 
     res.status(200).json({ message: 'Logout successfully' });
 }
+
+// Update captain status to active
+module.exports.activateCaptain = async (req, res, next) => {
+    try {
+        const captain = await captainModel.findByIdAndUpdate(
+            req.captain._id,
+            { status: 'active' },
+            { new: true }
+        );
+        
+        console.log('Captain activated:', captain._id);
+        res.status(200).json({ message: 'Captain activated successfully', captain });
+    } catch (error) {
+        console.error('Error activating captain:', error);
+        res.status(500).json({ message: 'Error activating captain' });
+    }
+}

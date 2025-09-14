@@ -16,20 +16,28 @@ const CaptainLogin = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const captain = {
-      email: email,
-      password
-    }
+    
+    try {
+      const captain = {
+        email: email,
+        password
+      }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain)
+      console.log('Logging in captain:', email);
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain)
 
-    if (response.status === 200) {
-      const data = response.data
+      if (response.status === 200) {
+        const data = response.data
+        console.log('Captain logged in successfully:', data);
 
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.token)
-      navigate('/captain-home')
-
+        setCaptain(data.captain)
+        localStorage.setItem('captain-token', data.token)
+        navigate('/captain-home')
+      }
+    } catch (error) {
+      console.error('Error logging in captain:', error);
+      console.error('Error response:', error.response?.data);
+      alert(`Failed to login: ${error.response?.data?.message || error.message}`);
     }
 
     setEmail('')

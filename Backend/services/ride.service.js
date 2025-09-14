@@ -9,37 +9,43 @@ async function getFare(pickup, destination) {
         throw new Error('Pickup and destination are required');
     }
 
-    const distanceTime = await mapService.getDistanceTime(pickup, destination);
+    try {
+        const distanceTime = await mapService.getDistanceTime(pickup, destination);
 
-    const baseFare = {
-        auto: 30,
-        car: 50,
-        moto: 20
-    };
+        const baseFare = {
+            auto: 30,
+            car: 50,
+            moto: 20
+        };
 
-    const perKmRate = {
-        auto: 10,
-        car: 15,
-        moto: 8
-    };
+        const perKmRate = {
+            auto: 10,
+            car: 15,
+            moto: 8
+        };
 
-    const perMinuteRate = {
-        auto: 2,
-        car: 3,
-        moto: 1.5
-    };
+        const perMinuteRate = {
+            auto: 2,
+            car: 3,
+            moto: 1.5
+        };
 
+        const fare = {
+            auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
+            car: Math.round(baseFare.car + ((distanceTime.distance.value / 1000) * perKmRate.car) + ((distanceTime.duration.value / 60) * perMinuteRate.car)),
+            moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto))
+        };
 
-
-    const fare = {
-        auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
-        car: Math.round(baseFare.car + ((distanceTime.distance.value / 1000) * perKmRate.car) + ((distanceTime.duration.value / 60) * perMinuteRate.car)),
-        moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto))
-    };
-
-    return fare;
-
-
+        return fare;
+    } catch (error) {
+        console.warn('Google Maps API failed for fare calculation, using fallback fares:', error.message);
+        // Return fallback fares
+        return {
+            auto: 50,
+            car: 80,
+            moto: 40
+        };
+    }
 }
 
 module.exports.getFare = getFare;
@@ -61,19 +67,26 @@ module.exports.createRide = async ({
         throw new Error('All fields are required');
     }
 
-    const fare = await getFare(pickup, destination);
+    console.log('Creating ride with:', { user, pickup, destination, vehicleType });
 
+    try {
+        const fare = await getFare(pickup, destination);
+        console.log('Fare calculated:', fare);
 
+        const ride = await rideModel.create({
+            user,
+            pickup,
+            destination,
+            otp: getOtp(6),
+            fare: fare[ vehicleType ]
+        });
 
-    const ride = rideModel.create({
-        user,
-        pickup,
-        destination,
-        otp: getOtp(6),
-        fare: fare[ vehicleType ]
-    })
-
-    return ride;
+        console.log('Ride created in database:', ride);
+        return ride;
+    } catch (error) {
+        console.error('Error in createRide service:', error);
+        throw error;
+    }
 }
 
 module.exports.confirmRide = async ({

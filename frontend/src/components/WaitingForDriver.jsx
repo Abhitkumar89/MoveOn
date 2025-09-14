@@ -1,6 +1,37 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const WaitingForDriver = (props) => {
+  const navigate = useNavigate();
+  
+  const handleRideCompleted = () => {
+    console.log('=== USER CLICKED RIDE COMPLETED ===');
+    console.log('Clearing OTP from localStorage...');
+    
+    // Clear the OTP from localStorage
+    localStorage.removeItem('current-ride-otp');
+    
+    // Clear pickup and destination inputs
+    if (props.setPickup) {
+      props.setPickup('');
+    }
+    if (props.setDestination) {
+      props.setDestination('');
+    }
+    
+    // Close the waiting for driver panel
+    props.setWaitingForDriver(false);
+    props.setVehicleFound(false);
+    
+    console.log('Navigating to /home...');
+    alert('Ride completed! Returning to find a ride page.');
+    
+    // Add a small delay to allow panel to close, then navigate
+    setTimeout(() => {
+      navigate('/home');
+    }, 500);
+  };
+  
   return (
     <div>
       <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -13,7 +44,8 @@ const WaitingForDriver = (props) => {
           <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullname.firstname}</h2>
           <h4 className='text-xl font-semibold -mt-1 -mb-1'>{props.ride?.captain.vehicle.plate}</h4>
           <p className='text-sm text-gray-600'>Maruti Suzuki Alto</p>
-          <h1 className='text-lg font-semibold'>  {props.ride?.otp} </h1>
+          <h1 className='text-3xl font-bold text-green-600'>OTP: {props.ride?.otp}</h1>
+          <p className='text-sm text-gray-600'>Share this OTP with your driver</p>
         </div>
       </div>
 
@@ -40,6 +72,15 @@ const WaitingForDriver = (props) => {
               <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
             </div>
           </div>
+        </div>
+        
+        <div className='w-full mt-6'>
+          <button 
+            onClick={handleRideCompleted}
+            className='w-full bg-green-600 text-white font-semibold py-4 rounded-lg text-lg hover:bg-green-700 transition-colors'
+          >
+            Ride Completed
+          </button>
         </div>
       </div>
     </div>

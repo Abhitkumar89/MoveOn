@@ -1,6 +1,24 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const RidePopUp = (props) => {
+    const navigate = useNavigate();
+    
+    const handleIgnore = () => {
+        console.log('=== CAPTAIN CLICKED IGNORE ===');
+        console.log('Clearing OTP from localStorage...');
+        
+        // Clear the OTP from localStorage so user gets notified
+        localStorage.removeItem('current-ride-otp');
+        
+        // Close the popup
+        props.setRidePopupPanel(false);
+        
+        // Navigate captain to home page
+        console.log('Navigating captain to home page...');
+        navigate('/captain-home');
+    };
+    
     return (
         <div>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -40,15 +58,16 @@ const RidePopUp = (props) => {
                 </div>
                 <div className='mt-5 w-full '>
                     <button onClick={() => {
+                        console.log('Accept button clicked');
+                        console.log('Ride data:', props.ride);
+                        console.log('confirmRide function:', props.confirmRide);
+                        
                         props.setConfirmRidePopupPanel(true)
                         props.confirmRide()
 
                     }} className=' bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg'>Accept</button>
 
-                    <button onClick={() => {
-                        props.setRidePopupPanel(false)
-
-                    }} className='mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg'>Ignore</button>
+                    <button onClick={handleIgnore} className='mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg'>Ignore</button>
 
 
                 </div>

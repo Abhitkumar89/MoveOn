@@ -24,28 +24,37 @@ const CaptainSignup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault()
-    const captainData = {
-      fullname: {
-        firstname: firstName,
-        lastname: lastName
-      },
-      email: email,
-      password: password,
-      vehicle: {
-        color: vehicleColor,
-        plate: vehiclePlate,
-        capacity: vehicleCapacity,
-        vehicleType: vehicleType
+    
+    try {
+      const captainData = {
+        fullname: {
+          firstname: firstName,
+          lastname: lastName
+        },
+        email: email,
+        password: password,
+        vehicle: {
+          color: vehicleColor,
+          plate: vehiclePlate,
+          capacity: vehicleCapacity,
+          vehicleType: vehicleType
+        }
       }
-    }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
+      console.log('Creating captain with data:', captainData);
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
 
-    if (response.status === 201) {
-      const data = response.data
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.token)
-      navigate('/captain-home')
+      if (response.status === 201) {
+        const data = response.data
+        console.log('Captain created successfully:', data);
+        setCaptain(data.captain)
+        localStorage.setItem('captain-token', data.token)
+        navigate('/captain-home')
+      }
+    } catch (error) {
+      console.error('Error creating captain:', error);
+      console.error('Error response:', error.response?.data);
+      alert(`Failed to create captain: ${error.response?.data?.message || error.message}`);
     }
 
     setEmail('')
