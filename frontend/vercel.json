@@ -1,13 +1,16 @@
 {
     "version": 2,
     "name": "moveon-frontend",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
     "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/index.html"
-        }
+      {
+        "handle": "filesystem"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
     ],
-    "regions": [
-        "bom1"
-    ]
-}
+    "regions": ["bom1"]
+  }
