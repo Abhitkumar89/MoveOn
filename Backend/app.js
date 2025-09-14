@@ -13,7 +13,19 @@ const rideRoutes=require('./routes/ride.routes.js');
 // Connect to MongoDB
 connectToDB();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://move-on-git-main-abhit-kumars-projects.vercel.app',
+    'https://move-on-eight.vercel.app',
+    'https://move-iq66a5lfc-abhit-kumars-projects.vercel.app',
+    'https://move-oxeb0nytj-abhit-kumars-projects.vercel.app',
+    'https://move-iv4iewhgz-abhit-kumars-projects.vercel.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

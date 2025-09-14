@@ -4,7 +4,7 @@ import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
+import ConfirmRidePopUp from '../components/ConfirmRidepopUp'
 import { useEffect, useContext } from 'react'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from "../context/CaptainContext"; 
