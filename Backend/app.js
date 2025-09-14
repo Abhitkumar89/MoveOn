@@ -16,6 +16,8 @@ connectToDB();
 app.use(cors({
   origin: [
     'http://localhost:3000',
+    'http://localhost:5173', // Add this for local Vite development
+    'https://move-on-inky.vercel.app', // Add your current frontend URL
     'https://move-on-git-main-abhit-kumars-projects.vercel.app',
     'https://move-on-eight.vercel.app',
     'https://move-iq66a5lfc-abhit-kumars-projects.vercel.app',
